@@ -1,13 +1,13 @@
-package com.zavsmit.jokes.ui.gallery
+package com.zavsmit.jokes.ui.settings
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
-class GalleryViewModel : ViewModel() {
+class SettingsViewModel : ViewModel() {
 
     private val _text = MutableLiveData<String>().apply {
-        value = "This is gallery Fragment"
+        value = "This is settings Fragment"
     }
     val text: LiveData<String> = _text
 }

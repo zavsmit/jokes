@@ -3,23 +3,23 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/nav_home">
+    app:startDestination="@+id/nav_jokes_list">
 
     <fragment
-        android:id="@+id/nav_home"
-        android:name="com.zavsmit.jokes.ui.home.HomeFragment"
-        android:label="@string/menu_home"
-        tools:layout="@layout/fragment_home" />
+        android:id="@+id/nav_jokes_list"
+        android:name="com.zavsmit.jokes.ui.jokes_list.JokesListFragment"
+        android:label="@string/menu_jokes_list"
+        tools:layout="@layout/fragment_jokes_list" />
 
     <fragment
-        android:id="@+id/nav_gallery"
-        android:name="com.zavsmit.jokes.ui.gallery.GalleryFragment"
-        android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" />
+        android:id="@+id/nav_my_jokes"
+        android:name="com.zavsmit.jokes.ui.my_jokes.MyJokesFragment"
+        android:label="@string/menu_my_jokes"
+        tools:layout="@layout/fragment_my_jokes" />
 
     <fragment
-        android:id="@+id/nav_slideshow"
-        android:name="com.zavsmit.jokes.ui.slideshow.SlideshowFragment"
-        android:label="@string/menu_slideshow"
-        tools:layout="@layout/fragment_slideshow" />
+        android:id="@+id/nav_settings"
+        android:name="com.zavsmit.jokes.ui.settings.SettingsFragment"
+        android:label="@string/menu_settings"
+        tools:layout="@layout/fragment_settings" />
 </navigation>
