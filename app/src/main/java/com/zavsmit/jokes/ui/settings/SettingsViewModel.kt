@@ -5,9 +5,15 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class SettingsViewModel : ViewModel() {
-
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is settings Fragment"
+    private val _uiModel = MutableLiveData<UiSettingsModel>().apply {
+        value = UiSettingsModel()
     }
-    val text: LiveData<String> = _text
+    val uiModel: LiveData<UiSettingsModel> = _uiModel
 }
+
+
+data class UiSettingsModel(
+    val firstName: String = "",
+    val lastName: String = "",
+    val isOffline: Boolean = false
+)

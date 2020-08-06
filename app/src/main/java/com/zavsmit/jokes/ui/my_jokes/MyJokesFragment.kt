@@ -1,38 +1,49 @@
 package com.zavsmit.jokes.ui.my_jokes
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
-import com.google.android.material.snackbar.Snackbar
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.zavsmit.jokes.R
-import kotlinx.android.synthetic.main.fragment_my_jokes.*
+import com.zavsmit.jokes.ui.jokes_list.JokesAdapter
 import kotlinx.android.synthetic.main.fragment_my_jokes.view.*
 
-class MyJokesFragment : Fragment() {
+class MyJokesFragment : Fragment(), AddJokeDialog.AddJokeDialogListener {
 
-    private lateinit var myJokesViewModel: MyJokesViewModel
+    private val myJokesViewModel: MyJokesViewModel by viewModels()
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var viewAdapter: JokesAdapter
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
-        myJokesViewModel =
-            ViewModelProviders.of(this).get(MyJokesViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_my_jokes, container, false)
-        myJokesViewModel.text.observe(viewLifecycleOwner, Observer {
-            text_gallery.text = it
-        })
 
-        root.fab_add.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
+        viewAdapter = JokesAdapter()
+        recyclerView = root.findViewById<RecyclerView>(R.id.rv_my_jokes).apply {
+            setHasFixedSize(true)
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = viewAdapter
         }
 
+        myJokesViewModel.uiJoke.observe(viewLifecycleOwner, Observer {
+            viewAdapter.setData(it)
+        })
+
+        root.fab_add.setOnClickListener { AddJokeDialog.newInstance().show(childFragmentManager, AddJokeDialog.TAG) }
+
         return root
+    }
+
+    override fun setEtResultDialog(text: String) {
+
     }
 }
