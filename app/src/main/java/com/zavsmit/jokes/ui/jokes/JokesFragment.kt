@@ -1,4 +1,4 @@
-package com.zavsmit.jokes.ui.my_jokes
+package com.zavsmit.jokes.ui.jokes
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,12 +10,10 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.zavsmit.jokes.R
-import com.zavsmit.jokes.ui.jokes.JokesAdapter
-import kotlinx.android.synthetic.main.fragment_my_jokes.view.*
 
-class MyJokesFragment : Fragment(), AddJokeDialog.AddJokeDialogListener {
+class JokesFragment : Fragment() {
 
-    private val myJokesViewModel: MyJokesViewModel by viewModels()
+    private val jokesViewModel: JokesListViewModel by viewModels()
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: JokesAdapter
 
@@ -24,25 +22,18 @@ class MyJokesFragment : Fragment(), AddJokeDialog.AddJokeDialogListener {
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
-        val root = inflater.inflate(R.layout.fragment_my_jokes, container, false)
+        val root = inflater.inflate(R.layout.fragment_jokes_list, container, false)
 
         viewAdapter = JokesAdapter()
-        recyclerView = root.findViewById<RecyclerView>(R.id.rv_my_jokes).apply {
+        recyclerView = root.findViewById<RecyclerView>(R.id.rv_jokes).apply {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(requireContext())
             adapter = viewAdapter
         }
 
-        myJokesViewModel.uiJoke.observe(viewLifecycleOwner, Observer {
+        jokesViewModel.uiJoke.observe(viewLifecycleOwner, Observer {
             viewAdapter.setData(it)
         })
-
-        root.fab_add.setOnClickListener { AddJokeDialog.newInstance().show(childFragmentManager, AddJokeDialog.TAG) }
-
         return root
-    }
-
-    override fun setEtResultDialog(text: String) {
-
     }
 }

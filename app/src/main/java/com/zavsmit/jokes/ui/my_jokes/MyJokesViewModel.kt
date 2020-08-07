@@ -3,7 +3,7 @@ package com.zavsmit.jokes.ui.my_jokes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.zavsmit.jokes.ui.jokes_list.UiModelJoke
+import com.zavsmit.jokes.ui.jokes.UiModelJoke
 
 class MyJokesViewModel : ViewModel() {
 
