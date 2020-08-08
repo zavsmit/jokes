@@ -1,39 +1,27 @@
 package com.zavsmit.jokes.ui.jokes
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.zavsmit.jokes.R
+import com.zavsmit.jokes.ui.common_jokes.JokesParentFragment
+import dagger.hilt.android.AndroidEntryPoint
 
-class JokesFragment : Fragment() {
+@AndroidEntryPoint
+class JokesFragment : JokesParentFragment() {
+    private val jokesViewModel: JokesViewModel by viewModels()
 
-    private val jokesViewModel: JokesListViewModel by viewModels()
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var viewAdapter: JokesAdapter
-
-    override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
-    ): View? {
-        val root = inflater.inflate(R.layout.fragment_jokes_list, container, false)
-
-        viewAdapter = JokesAdapter()
-        recyclerView = root.findViewById<RecyclerView>(R.id.rv_jokes).apply {
-            setHasFixedSize(true)
-            layoutManager = LinearLayoutManager(requireContext())
-            adapter = viewAdapter
-        }
-
+    override fun vmObserve() {
         jokesViewModel.uiJoke.observe(viewLifecycleOwner, Observer {
             viewAdapter.setData(it)
         })
-        return root
+
+        jokesViewModel.getData()
+    }
+
+    override fun onLikeClicked(id: Long) {
+        jokesViewModel.onLikeClicked(id)
+    }
+
+    override fun onShareClicked(text: String) {
+        jokesViewModel.onShareClicked(text)
     }
 }

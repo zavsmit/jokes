@@ -1,30 +1,41 @@
 package com.zavsmit.jokes.ui.jokes
 
+import android.util.Log
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.zavsmit.jokes.data.JokesRepository
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 
-class JokesListViewModel : ViewModel() {
+class JokesViewModel @ViewModelInject constructor(private val repository: JokesRepository) : ViewModel() {
 
-    private val _uiJoke = MutableLiveData<List<UiModelJoke>>().apply {
-        value = getListJokes()
-    }
+    private val _uiJoke = MutableLiveData<List<UiModelJoke>>()
     val uiJoke: LiveData<List<UiModelJoke>> = _uiJoke
 
+    fun onLikeClicked(id: Long) {
 
-    private fun getListJokes(): List<UiModelJoke> {
-        val listJokes = mutableListOf<UiModelJoke>()
+    }
 
-        listJokes.add(UiModelJoke("1111111111111111", "Like"))
-        listJokes.add(UiModelJoke("2222222222222222 asd sfasd asd fasdf asd fasd fasdjhfl aksdhfl sdyfhl kadhslkfu aksfaj dfgyhalskdfhla sglahjfkauy iluasdfglas ufasygdf ", "Dislike"))
-        listJokes.add(UiModelJoke("3333333333333333", "Like"))
+    fun onShareClicked(text: String) {
 
-        return listJokes
+    }
+
+    fun getData() {
+        repository.getJokes()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ result ->
+                    _uiJoke.value = result
+                },
+                        { t: Throwable? ->
+                            Log.d("sdf", "sdf")
+                        })
     }
 }
 
 data class UiModelJoke(
         val text: String = "",
         val likeButtonText: String = "Like",
-        val isVisibleShare: Boolean = true
+        val isVisibleShare: Boolean = true,
+        val id: Long = 0
 )

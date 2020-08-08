@@ -1,4 +1,4 @@
-package com.zavsmit.jokes.ui.jokes
+package com.zavsmit.jokes.ui.common_jokes
 
 import android.view.LayoutInflater
 import android.view.View
@@ -9,9 +9,11 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.zavsmit.jokes.R
+import com.zavsmit.jokes.ui.jokes.UiModelJoke
 import kotlinx.android.synthetic.main.item_joke.view.*
 
-class JokesAdapter() : RecyclerView.Adapter<JokesAdapter.MyViewHolder>() {
+class JokesAdapter(private val onLikeClicked: (Long) -> Unit,
+                   private val onShareClicked: (String) -> Unit) : RecyclerView.Adapter<JokesAdapter.MyViewHolder>() {
     private var layoutInflater: LayoutInflater? = null
     private var jokes = listOf<UiModelJoke>()
 
@@ -37,12 +39,12 @@ class JokesAdapter() : RecyclerView.Adapter<JokesAdapter.MyViewHolder>() {
 
         holder.bLike.apply {
             text = joke.likeButtonText
-            setOnClickListener { onClickListener() }
+            setOnClickListener { onLikeClicked.invoke(joke.id) }
         }
 
         holder.bShare.apply {
             visibility = if (joke.isVisibleShare) VISIBLE else GONE
-            setOnClickListener { onClickListener() }
+            setOnClickListener { onShareClicked.invoke(joke.text) }
         }
     }
 
@@ -57,7 +59,4 @@ class JokesAdapter() : RecyclerView.Adapter<JokesAdapter.MyViewHolder>() {
         jokes = data
         notifyItemChanged(position)
     }
-
-
-    fun onClickListener() {}
 }

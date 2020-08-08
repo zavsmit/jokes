@@ -24,7 +24,7 @@ import javax.net.ssl.*
 
 @Module
 @InstallIn(ApplicationComponent::class)
-class NetworkModule {
+class RetrofitModule {
     companion object {
         private const val BASE_URL = "https://api.icndb.com/"
         private const val TIMEOUT = 20
@@ -34,14 +34,6 @@ class NetworkModule {
     @Provides
     @Singleton
     fun provideRetrofit(): Retrofit {
-//        return Retrofit.Builder()
-//                .baseUrl(BASE_URL)
-//                .addConverterFactory(GsonConverterFactory.create())
-//                .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
-//                .build()
-//                .create(JokesApi::class.java)
-
-
         val httpClientBuilder = OkHttpClient.Builder()
                 .readTimeout(TIMEOUT.toLong(), TimeUnit.SECONDS)
                 .connectTimeout(TIMEOUT_CONNECTION.toLong(), TimeUnit.SECONDS)
