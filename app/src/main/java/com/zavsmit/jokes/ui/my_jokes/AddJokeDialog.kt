@@ -10,16 +10,16 @@ import kotlinx.android.synthetic.main.dialog_add_joke.view.*
 
 class AddJokeDialog : DialogFragment() {
 
+    companion object {
+        fun newInstance() = AddJokeDialog()
+        const val TAG = "AddJokeDialog"
+    }
+
     interface AddJokeDialogListener {
         fun setEtResultDialog(text: String)
     }
 
     private var listener: AddJokeDialogListener? = null
-
-    companion object {
-        fun newInstance() = AddJokeDialog()
-        const val TAG = "AddJokeDialog"
-    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -46,27 +46,4 @@ class AddJokeDialog : DialogFragment() {
                 .setNegativeButton(R.string.cancel, null)
         return builder.create()
     }
-
-//    override fun onResume() {
-//        super.onResume()
-//
-//        val etDialog = dialog as AlertDialog?
-//        if (etDialog != null) {
-//            val button = etDialog.getButton(Dialog.BUTTON_POSITIVE) as Button
-//            button.setOnClickListener {
-//                if (!isOnline(requireContext())) {
-//                    Toast.makeText(activity, R.string.no_network, Toast.LENGTH_LONG).show()
-//                    return@setOnClickListener
-//                }
-//
-//                val result = etDialog.et_refuse_dialog.text.toString()
-//                if (result.isBlank()) {
-//                    etDialog.til_refuse_dialog.error = getString(dialogData.errorString)
-//                } else {
-//                    listener?.setEtResultDialog(result)
-//                    etDialog.dismiss()
-//                }
-//            }
-//        }
-//    }
 }

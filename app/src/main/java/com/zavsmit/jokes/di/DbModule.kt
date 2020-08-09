@@ -15,11 +15,9 @@ import javax.inject.Singleton
 class DbModule {
     @Provides
     @Singleton
-    fun provideAppDB(application: Application): AppDatabase {
-        return Room.databaseBuilder(application, AppDatabase::class.java, "appDb")
-//            .allowMainThreadQueries()
-                .build()
-    }
+    fun provideAppDB(application: Application) = Room.databaseBuilder(application, AppDatabase::class.java, "appDb")
+            .build()
+
 
     @Provides
     @Singleton

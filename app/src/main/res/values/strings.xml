@@ -17,4 +17,14 @@
     <string name="cancel">cancel</string>
     <string name="save">save</string>
     <string name="add_new_joke">Add new joke</string>
+    <string name="loading">Loading...</string>
+    <string name="add_joke">Add a joke by pressing +</string>
+    <string name="chuck">Chuck</string>
+    <string name="norris">Norris</string>
+    <string name="delete">Delete</string>
+    <string name="dislike">Dislike</string>
+    <string name="joke_added">Joke added to my jokes</string>
+    <string name="joke_removed">Joke removed from my jokes</string>
+    <string name="error">Something went wrong</string>
+    <string name="joke_deleted">joke deleted"</string>
 </resources>

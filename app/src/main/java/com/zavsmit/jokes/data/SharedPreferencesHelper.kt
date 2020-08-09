@@ -14,11 +14,12 @@ class SharedPrefsHelper constructor(application: Application) {
 
     private var pref = application.getSharedPreferences(PREF_FILE_NAME, Context.MODE_PRIVATE)
 
-    fun setName(firstName: String, lastName: String) {
-        pref.edit {
-            putString(FIRST_NAME, firstName)
-            putString(LAST_NAME, lastName)
-        }
+    fun saveFirstName(firstName: String) {
+        pref.edit { putString(FIRST_NAME, firstName) }
+    }
+
+    fun saveLastName(lastName: String) {
+        pref.edit { putString(LAST_NAME, lastName) }
     }
 
     fun getFirstName() = pref.getString(FIRST_NAME, "") ?: ""

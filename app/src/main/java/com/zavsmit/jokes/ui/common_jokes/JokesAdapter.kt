@@ -7,15 +7,17 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.zavsmit.jokes.R
-import com.zavsmit.jokes.ui.jokes.UiModelJoke
+import com.zavsmit.jokes.domain.models.UiModelJoke
 import kotlinx.android.synthetic.main.item_joke.view.*
 
 class JokesAdapter(private val onLikeClicked: (Long) -> Unit,
-                   private val onShareClicked: (String) -> Unit) : RecyclerView.Adapter<JokesAdapter.MyViewHolder>() {
+                   private val onShareClicked: (String) -> Unit,
+                   private val isMyJokes: Boolean = false) : ListAdapter<UiModelJoke, JokesAdapter.MyViewHolder>(DiffCallback()) {
     private var layoutInflater: LayoutInflater? = null
-    private var jokes = listOf<UiModelJoke>()
 
     class MyViewHolder(v: View) : RecyclerView.ViewHolder(v) {
         var tvItem: TextView = v.tv_item
@@ -34,8 +36,8 @@ class JokesAdapter(private val onLikeClicked: (Long) -> Unit,
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        val joke = jokes[position]
-        holder.tvItem.text = joke.text
+        val joke = getItem(position)
+        holder.tvItem.text = "#${joke.id}\n${joke.text}"
 
         holder.bLike.apply {
             text = joke.likeButtonText
@@ -43,20 +45,18 @@ class JokesAdapter(private val onLikeClicked: (Long) -> Unit,
         }
 
         holder.bShare.apply {
-            visibility = if (joke.isVisibleShare) VISIBLE else GONE
+            visibility = if (isMyJokes) GONE else VISIBLE
             setOnClickListener { onShareClicked.invoke(joke.text) }
         }
     }
+}
 
-    override fun getItemCount() = jokes.size
-
-    fun setData(data: List<UiModelJoke>) {
-        jokes = data
-        notifyDataSetChanged()
+private class DiffCallback : DiffUtil.ItemCallback<UiModelJoke>() {
+    override fun areItemsTheSame(oldItem: UiModelJoke, newItem: UiModelJoke): Boolean {
+        return oldItem.id == newItem.id
     }
 
-    fun changeItem(data: List<UiModelJoke>, position: Int) {
-        jokes = data
-        notifyItemChanged(position)
+    override fun areContentsTheSame(oldItem: UiModelJoke, newItem: UiModelJoke): Boolean {
+        return oldItem.id == newItem.id && oldItem.likeButtonText == newItem.likeButtonText && oldItem.text == newItem.text
     }
 }

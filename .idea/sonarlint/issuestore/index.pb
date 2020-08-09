@@ -67,3 +67,9 @@ e
 5app/src/main/java/com/zavsmit/jokes/di/UtilsModule.kt,b/9/b9c2be9d61e7e9a96256007e64f36e4dc9e763ff
 m
 =app/src/main/java/com/zavsmit/jokes/core/ConnectivityState.kt,d/8/d8e3221e324e0ede0415d45b4277c467220b88b1
+k
+;app/src/main/java/com/zavsmit/jokes/core/SingleLiveEvent.kt,a/b/ab230409105b06bfc1c26d9bc7fc23db7c173bbe
+f
+6app/src/main/java/com/zavsmit/jokes/di/SensorModule.kt,2/0/205e069a45b8785bafb92ca17f78aa05f82ab0e3
+u
+Eapp/src/main/java/com/zavsmit/jokes/core/sensor/ShakeEventProvider.kt,c/5/c5dfbe320cdd1174e0416ed932fd47c0f9d52b0c

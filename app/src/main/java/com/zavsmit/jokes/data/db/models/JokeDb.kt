@@ -10,8 +10,9 @@ data class JokeDb(
         val joke: String
 )
 
-@Entity(tableName = "my_joke_id_db")
-data class MyJokeIdDb(
+@Entity(tableName = "my_joke_db")
+data class MyJokeDb(
         @PrimaryKey
-        val id: Long
+        val id: Long,
+        val joke: String
 )
