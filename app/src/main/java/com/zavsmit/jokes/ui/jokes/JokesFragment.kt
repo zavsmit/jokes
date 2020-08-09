@@ -21,11 +21,11 @@ class JokesFragment : JokesParentFragment() {
             viewAdapter.submitList(it.list)
             showScreen(it.screenNumber)
         })
-        jokesViewModel.viewEffect.observe(viewLifecycleOwner, Observer {
+        jokesViewModel.singleEvent.observe(viewLifecycleOwner, Observer {
             when (it) {
-                is ViewEffect.Share -> shareJoke(it.text)
-                is ViewEffect.SnackBar -> showSnackBar(it.text)
-                is ViewEffect.Progress -> toggleRefreshing(it.isVisible)
+                is SingleEvent.Share -> shareJoke(it.text)
+                is SingleEvent.SnackBar -> showSnackBar(it.text)
+                is SingleEvent.Progress -> toggleRefreshing(it.isVisible)
             }
         })
     }

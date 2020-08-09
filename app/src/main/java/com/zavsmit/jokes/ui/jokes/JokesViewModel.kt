@@ -10,6 +10,7 @@ import com.zavsmit.jokes.core.SingleLiveEvent
 import com.zavsmit.jokes.core.sensor.ShakeEventProvider
 import com.zavsmit.jokes.data.ResourceManager
 import com.zavsmit.jokes.data.SharedPrefsHelper
+import com.zavsmit.jokes.data.db.models.JokeDb
 import com.zavsmit.jokes.domain.models.UiJokes
 import com.zavsmit.jokes.domain.models.UiModelJoke
 import com.zavsmit.jokes.domain.usecases.*
@@ -28,13 +29,14 @@ class JokesViewModel @ViewModelInject constructor(
         private val getNextJokesUseCase: GetNextJokesUseCase,
         private val refreshJokeUseCase: RefreshJokeUseCase,
         private val getRandomJokeUseCase: GetRandomJokeUseCase,
+        private val getMyJokeIdsUseCase: GetMyJokeIdsUseCase,
         private val shakeEventProvider: ShakeEventProvider) : ViewModel() {
 
     private val _uiJoke = MutableLiveData<UiJokes>()
     val uiJoke: LiveData<UiJokes> = _uiJoke
 
-    private val _viewEffect = SingleLiveEvent<ViewEffect>()
-    val viewEffect: LiveData<ViewEffect> = _viewEffect
+    private val _viewEffect = SingleLiveEvent<SingleEvent>()
+    val singleEvent: LiveData<SingleEvent> = _viewEffect
 
     private val compositeDisposable = CompositeDisposable()
     private val shakeObserver = Observer<Boolean> { refreshData() }
@@ -59,13 +61,13 @@ class JokesViewModel @ViewModelInject constructor(
                     addMyJokeByIdUseCase.execute(AddMyJokeByIdUseCase.Arg(id))
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe { _viewEffect.value = ViewEffect.SnackBar(getString(R.string.joke_added)) }
+                            .subscribe { _viewEffect.value = SingleEvent.SnackBar(getString(R.string.joke_added)) }
                     getString(R.string.dislike)
                 } else {
                     deleteJokeUseCase.execute(DeleteJokeUseCase.Arg(id))
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe { _viewEffect.postValue(ViewEffect.SnackBar(getString(R.string.joke_removed))) }
+                            .subscribe { _viewEffect.postValue(SingleEvent.SnackBar(getString(R.string.joke_removed))) }
                     getString(R.string.like)
                 }
                 val newJoke = UiModelJoke(joke.text, newTextButton, joke.id)
@@ -81,7 +83,7 @@ class JokesViewModel @ViewModelInject constructor(
     }
 
     fun onShareClicked(text: String) {
-        _viewEffect.postValue(ViewEffect.Share(text))
+        _viewEffect.postValue(SingleEvent.Share(text))
     }
 
     private fun getFirstData() {
@@ -91,25 +93,29 @@ class JokesViewModel @ViewModelInject constructor(
             return
         }
 
-        _viewEffect.postValue(ViewEffect.Progress(true))
+        _viewEffect.postValue(SingleEvent.Progress(true))
         compositeDisposable.addAll(
                 getJokesUseCase.execute()
                         .subscribeOn(Schedulers.io())
+                        .map {
+                            val myJokeIds = getMyJokeIdsUseCase.execute(GetMyJokeIdsUseCase.Arg(it))
+                            return@map mapToUiList(it, myJokeIds)
+                        }
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe({
                             val screenType = if (it.isEmpty()) JokesParentFragment.TEXT_SCREEN else DATA_SCREEN
                             _uiJoke.value = UiJokes(it, screenType)
-                            _viewEffect.value = ViewEffect.Progress(false)
+                            _viewEffect.value = SingleEvent.Progress(false)
                         }, { t: Throwable? ->
                             showError(t?.message)
-                            _viewEffect.value = ViewEffect.Progress(false)
+                            _viewEffect.value = SingleEvent.Progress(false)
                         })
         )
     }
 
     fun refreshData() {
         compositeDisposable.clear()
-        _viewEffect.postValue(ViewEffect.Progress(true))
+        _viewEffect.postValue(SingleEvent.Progress(true))
         if (sharedPrefsHelper.isOfflineMode()) {
             getRandomJoke()
             return
@@ -119,18 +125,21 @@ class JokesViewModel @ViewModelInject constructor(
         compositeDisposable.addAll(
                 refreshJokeUseCase.execute()
                         .subscribeOn(Schedulers.io())
+                        .map {
+                            val myJokeIds = getMyJokeIdsUseCase.execute(GetMyJokeIdsUseCase.Arg(it))
+                            return@map mapToUiList(it, myJokeIds)
+                        }
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe({
                             val screenType = if (it.isEmpty()) JokesParentFragment.TEXT_SCREEN else DATA_SCREEN
                             _uiJoke.value = UiJokes(it, screenType)
-                            _viewEffect.postValue(ViewEffect.Progress(false))
+                            _viewEffect.postValue(SingleEvent.Progress(false))
                         }, { t: Throwable? ->
                             showError(t?.message)
-                            _viewEffect.value = ViewEffect.Progress(false)
+                            _viewEffect.value = SingleEvent.Progress(false)
                         })
         )
     }
-
 
     fun getNextData() {
         compositeDisposable.clear()
@@ -146,6 +155,10 @@ class JokesViewModel @ViewModelInject constructor(
         compositeDisposable.addAll(
                 getNextJokesUseCase.execute(GetNextJokesUseCase.NextJokesArgsModel(pageNumber))
                         .subscribeOn(Schedulers.io())
+                        .map {
+                            val myJokeIds = getMyJokeIdsUseCase.execute(GetMyJokeIdsUseCase.Arg(it))
+                            return@map mapToUiList(it, myJokeIds)
+                        }
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe({
                             val changedList = uiJoke.value?.list?.toMutableList()
@@ -170,30 +183,46 @@ class JokesViewModel @ViewModelInject constructor(
     }
 
     private fun showError(text: String?) {
-        _viewEffect.value = ViewEffect.SnackBar(text ?: getString(R.string.error))
+        _viewEffect.value = SingleEvent.SnackBar(text ?: getString(R.string.error))
     }
 
     private fun getRandomJoke() {
         compositeDisposable.addAll(
                 getRandomJokeUseCase.execute()
                         .subscribeOn(Schedulers.io())
+                        .map {
+                            val myJokeIds = getMyJokeIdsUseCase.execute(GetMyJokeIdsUseCase.Arg(it))
+                            return@map mapToUiList(it, myJokeIds)
+                        }
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe({
                             val screenType = if (it.isEmpty()) JokesParentFragment.TEXT_SCREEN else DATA_SCREEN
                             _uiJoke.value = UiJokes(it, screenType)
-                            _viewEffect.postValue(ViewEffect.Progress(false))
+                            _viewEffect.postValue(SingleEvent.Progress(false))
                         }, { t: Throwable? ->
                             showError(t?.message)
-                            _viewEffect.value = ViewEffect.Progress(false)
+                            _viewEffect.value = SingleEvent.Progress(false)
                         })
         )
+    }
+
+    private fun mapToUiList(list: List<JokeDb>, myJokeIds: List<Long>): List<UiModelJoke> {
+        return mutableListOf<UiModelJoke>().apply {
+            list.forEach {
+                val textButton = if (myJokeIds.contains(it.id))
+                    resourceManager.getString(R.string.dislike)
+                else resourceManager.getString(R.string.like)
+
+                add(UiModelJoke(id = it.id, text = it.joke, likeButtonText = textButton))
+            }
+        }
     }
 
     private fun getString(id: Int) = resourceManager.getString(id)
 }
 
-sealed class ViewEffect {
-    data class Share(val text: String) : ViewEffect()
-    data class SnackBar(val text: String) : ViewEffect()
-    data class Progress(val isVisible: Boolean) : ViewEffect()
+sealed class SingleEvent {
+    data class Share(val text: String) : SingleEvent()
+    data class SnackBar(val text: String) : SingleEvent()
+    data class Progress(val isVisible: Boolean) : SingleEvent()
 }

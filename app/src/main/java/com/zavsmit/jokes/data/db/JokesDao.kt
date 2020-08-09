@@ -9,6 +9,7 @@ import com.zavsmit.jokes.data.db.models.JokeDb
 import com.zavsmit.jokes.data.db.models.MyJokeDb
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.Single
 
 @Dao
 interface JokesDao {
@@ -19,7 +20,7 @@ interface JokesDao {
     fun deleteJokes(): Completable
 
     @Query("SELECT * FROM joke_db ORDER BY RANDOM() LIMIT 1")
-    fun getRandomJoke(): Observable<List<JokeDb>>
+    fun getRandomJoke(): Single<List<JokeDb>>
 
     @Query("SELECT * FROM joke_db ORDER BY id LIMIT :limit OFFSET :offset")
     fun getJokes(offset: Long = 0, limit: Long = ITEM_PER_PAGE): Observable<List<JokeDb>>

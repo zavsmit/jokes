@@ -2,18 +2,17 @@ package com.zavsmit.jokes
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.zavsmit.jokes.data.ResourceManager
+import com.zavsmit.jokes.data.SharedPrefsHelper
 import com.zavsmit.jokes.domain.usecases.AddJokeUseCase
-import com.zavsmit.jokes.domain.usecases.AddMyJokeByIdUseCase
 import com.zavsmit.jokes.domain.usecases.DeleteJokeUseCase
 import com.zavsmit.jokes.domain.usecases.GetMyJokesUseCase
-import com.zavsmit.jokes.ui.jokes.ViewEffect
+import com.zavsmit.jokes.ui.jokes.SingleEvent
 import com.zavsmit.jokes.ui.my_jokes.MyJokesViewModel
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Observable
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -32,12 +31,14 @@ class MyJokesViewModelTest {
     private val addJokeUseCase = mockk<AddJokeUseCase>(relaxed = true)
     private val deleteJokeUseCase = mockk<DeleteJokeUseCase>(relaxed = true)
     private val getMyJokesUseCase = mockk<GetMyJokesUseCase>(relaxed = true)
+    private val sharedPrefsHelper = mockk<SharedPrefsHelper>(relaxed = true)
 
     @Before
     fun setup() {
         MockitoAnnotations.initMocks(this)
         viewModel = MyJokesViewModel(
                 resourceManager,
+                sharedPrefsHelper,
                 addJokeUseCase,
                 deleteJokeUseCase,
                 getMyJokesUseCase
@@ -91,7 +92,7 @@ class MyJokesViewModelTest {
     fun `snack bar should be shown after joke deleted`() {
         every { deleteJokeUseCase.execute(any()) } returns Completable.complete()
         viewModel.deleteJoke(1)
-        assert(viewModel.viewEffect.value == ViewEffect.SnackBar(resourceManager.getString(R.string.joke_deleted)))
+        assert(viewModel.singleEvent.value == SingleEvent.SnackBar(resourceManager.getString(R.string.joke_deleted)))
     }
 
     @Test

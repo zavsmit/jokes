@@ -5,7 +5,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.zavsmit.jokes.R
 import com.zavsmit.jokes.ui.common_jokes.JokesParentFragment
-import com.zavsmit.jokes.ui.jokes.ViewEffect
+import com.zavsmit.jokes.ui.jokes.SingleEvent
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_jokes.*
 
@@ -25,10 +25,10 @@ class MyJokesFragment : JokesParentFragment(), AddJokeDialog.AddJokeDialogListen
             viewAdapter.submitList(it.list)
             showScreen(it.screenNumber)
         })
-        myJokesViewModel.viewEffect.observe(viewLifecycleOwner, Observer {
+        myJokesViewModel.singleEvent.observe(viewLifecycleOwner, Observer {
             when (it) {
-                is ViewEffect.SnackBar -> showSnackBar(it.text)
-                is ViewEffect.Progress -> toggleRefreshing(it.isVisible)
+                is SingleEvent.SnackBar -> showSnackBar(it.text)
+                is SingleEvent.Progress -> toggleRefreshing(it.isVisible)
             }
         })
     }

@@ -6,7 +6,7 @@ import com.zavsmit.jokes.data.ResourceManager
 import com.zavsmit.jokes.data.SharedPrefsHelper
 import com.zavsmit.jokes.domain.usecases.*
 import com.zavsmit.jokes.ui.jokes.JokesViewModel
-import com.zavsmit.jokes.ui.jokes.ViewEffect
+import com.zavsmit.jokes.ui.jokes.SingleEvent
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
@@ -34,6 +34,7 @@ class JokesViewModelTest {
     private val getNextJokesUseCase = mockk<GetNextJokesUseCase>(relaxed = true)
     private val refreshJokeUseCase = mockk<RefreshJokeUseCase>(relaxed = true)
     private val getRandomJokeUseCase = mockk<GetRandomJokeUseCase>(relaxed = true)
+    private val getMyJokeIdsUseCase = mockk<GetMyJokeIdsUseCase>(relaxed = true)
     private val shakeEventProvider = mockk<ShakeEventProvider>(relaxed = true)
 
     @Before
@@ -48,6 +49,7 @@ class JokesViewModelTest {
                 getNextJokesUseCase,
                 refreshJokeUseCase,
                 getRandomJokeUseCase,
+                getMyJokeIdsUseCase,
                 shakeEventProvider
         )
     }
@@ -55,7 +57,7 @@ class JokesViewModelTest {
     @Test
     fun `should show shared action`() {
         viewModel.onShareClicked("text")
-        assert(viewModel.viewEffect.value is ViewEffect.Share)
+        assert(viewModel.singleEvent.value is SingleEvent.Share)
     }
 
     @Test
@@ -83,6 +85,6 @@ class JokesViewModelTest {
     fun `snack bar should be shown after joke added`() {
         every { addMyJokeByIdUseCase.execute(any()) } returns Completable.complete()
         viewModel.onLikeClicked(1)
-        assert(viewModel.viewEffect.value == ViewEffect.SnackBar(resourceManager.getString(R.string.joke_added)))
+        assert(viewModel.singleEvent.value == SingleEvent.SnackBar(resourceManager.getString(R.string.joke_added)))
     }
 }
