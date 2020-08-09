@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.zavsmit.jokes.domain.JokesRepository.Companion.ITEM_PER_PAGE
+import com.zavsmit.jokes.data.JokesRepository.Companion.ITEM_PER_PAGE
 import com.zavsmit.jokes.data.db.models.JokeDb
 import com.zavsmit.jokes.data.db.models.MyJokeDb
 import io.reactivex.rxjava3.core.Completable

@@ -8,9 +8,11 @@ import androidx.lifecycle.ViewModel
 import com.zavsmit.jokes.R
 import com.zavsmit.jokes.core.SingleLiveEvent
 import com.zavsmit.jokes.core.sensor.ShakeEventProvider
-import com.zavsmit.jokes.domain.JokesRepository
+import com.zavsmit.jokes.data.ResourceManager
+import com.zavsmit.jokes.data.SharedPrefsHelper
 import com.zavsmit.jokes.domain.models.UiJokes
 import com.zavsmit.jokes.domain.models.UiModelJoke
+import com.zavsmit.jokes.domain.usecases.*
 import com.zavsmit.jokes.ui.common_jokes.JokesParentFragment
 import com.zavsmit.jokes.ui.common_jokes.JokesParentFragment.Companion.DATA_SCREEN
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -18,7 +20,14 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 
 class JokesViewModel @ViewModelInject constructor(
-        private val repository: JokesRepository,
+        private val resourceManager: ResourceManager,
+        private val sharedPrefsHelper: SharedPrefsHelper,
+        private val getJokesUseCase: GetJokesUseCase,
+        private val addMyJokeByIdUseCase: AddMyJokeByIdUseCase,
+        private val deleteJokeUseCase: DeleteJokeUseCase,
+        private val getNextJokesUseCase: GetNextJokesUseCase,
+        private val refreshJokeUseCase: RefreshJokeUseCase,
+        private val getRandomJokeUseCase: GetRandomJokeUseCase,
         private val shakeEventProvider: ShakeEventProvider) : ViewModel() {
 
     private val _uiJoke = MutableLiveData<UiJokes>()
@@ -47,13 +56,13 @@ class JokesViewModel @ViewModelInject constructor(
         for (joke in jokes) {
             if (joke.id == id) {
                 val newTextButton = if (joke.likeButtonText == getString(R.string.like)) {
-                    repository.addMyJokeById(id)
+                    addMyJokeByIdUseCase.execute(AddMyJokeByIdUseCase.Arg(id))
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe { _viewEffect.value = ViewEffect.SnackBar(getString(R.string.joke_added)) }
                     getString(R.string.dislike)
                 } else {
-                    repository.deleteMyJoke(id)
+                    deleteJokeUseCase.execute(DeleteJokeUseCase.Arg(id))
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe { _viewEffect.postValue(ViewEffect.SnackBar(getString(R.string.joke_removed))) }
@@ -77,14 +86,14 @@ class JokesViewModel @ViewModelInject constructor(
 
     private fun getFirstData() {
         compositeDisposable.clear()
-        if (repository.ifRandomMode()) {
+        if (sharedPrefsHelper.isOfflineMode()) {
             getRandomJoke()
             return
         }
 
         _viewEffect.postValue(ViewEffect.Progress(true))
         compositeDisposable.addAll(
-                repository.getJokes()
+                getJokesUseCase.execute()
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe({
@@ -101,14 +110,14 @@ class JokesViewModel @ViewModelInject constructor(
     fun refreshData() {
         compositeDisposable.clear()
         _viewEffect.postValue(ViewEffect.Progress(true))
-        if (repository.ifRandomMode()) {
+        if (sharedPrefsHelper.isOfflineMode()) {
             getRandomJoke()
             return
         }
 
         pageNumber = 0
         compositeDisposable.addAll(
-                repository.refreshJokes()
+                refreshJokeUseCase.execute()
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe({
@@ -126,7 +135,7 @@ class JokesViewModel @ViewModelInject constructor(
     fun getNextData() {
         compositeDisposable.clear()
 
-        if (repository.ifRandomMode()) {
+        if (sharedPrefsHelper.isOfflineMode()) {
             getRandomJoke()
             return
         }
@@ -135,7 +144,7 @@ class JokesViewModel @ViewModelInject constructor(
         isLoadingData = true
         ++pageNumber
         compositeDisposable.addAll(
-                repository.getNextPageJokes(pageNumber)
+                getNextJokesUseCase.execute(GetNextJokesUseCase.NextJokesArgsModel(pageNumber))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe({
@@ -166,7 +175,7 @@ class JokesViewModel @ViewModelInject constructor(
 
     private fun getRandomJoke() {
         compositeDisposable.addAll(
-                repository.getRandomJoke()
+                getRandomJokeUseCase.execute()
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe({
@@ -180,7 +189,7 @@ class JokesViewModel @ViewModelInject constructor(
         )
     }
 
-    private fun getString(id: Int) = repository.getResources().getString(id)
+    private fun getString(id: Int) = resourceManager.getString(id)
 }
 
 sealed class ViewEffect {
