@@ -27,8 +27,8 @@ import javax.net.ssl.*
 class RetrofitModule {
     companion object {
         private const val BASE_URL = "https://api.icndb.com/"
-        private const val TIMEOUT = 20
-        private const val TIMEOUT_CONNECTION = 20
+        private const val TIMEOUT = 10
+        private const val TIMEOUT_CONNECTION = 10
     }
 
     @Provides

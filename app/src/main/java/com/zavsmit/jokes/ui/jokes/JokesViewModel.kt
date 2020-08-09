@@ -1,6 +1,5 @@
 package com.zavsmit.jokes.ui.jokes
 
-import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -12,6 +11,7 @@ import com.zavsmit.jokes.core.sensor.ShakeEventProvider
 import com.zavsmit.jokes.domain.JokesRepository
 import com.zavsmit.jokes.domain.models.UiJokes
 import com.zavsmit.jokes.domain.models.UiModelJoke
+import com.zavsmit.jokes.ui.common_jokes.JokesParentFragment
 import com.zavsmit.jokes.ui.common_jokes.JokesParentFragment.Companion.DATA_SCREEN
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
@@ -50,15 +50,13 @@ class JokesViewModel @ViewModelInject constructor(
                     repository.addMyJokeById(id)
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe({ Log.d("", "") })
-                    _viewEffect.value = ViewEffect.SnackBar(getString(R.string.joke_added))
+                            .subscribe { _viewEffect.value = ViewEffect.SnackBar(getString(R.string.joke_added)) }
                     getString(R.string.dislike)
                 } else {
                     repository.deleteMyJoke(id)
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe({ Log.d("", "") })
-                    _viewEffect.postValue(ViewEffect.SnackBar(getString(R.string.joke_removed)))
+                            .subscribe { _viewEffect.postValue(ViewEffect.SnackBar(getString(R.string.joke_removed))) }
                     getString(R.string.like)
                 }
                 val newJoke = UiModelJoke(joke.text, newTextButton, joke.id)
@@ -90,11 +88,12 @@ class JokesViewModel @ViewModelInject constructor(
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe({
-                            _uiJoke.value = UiJokes(it, DATA_SCREEN)
+                            val screenType = if (it.isEmpty()) JokesParentFragment.TEXT_SCREEN else DATA_SCREEN
+                            _uiJoke.value = UiJokes(it, screenType)
                             _viewEffect.value = ViewEffect.Progress(false)
                         }, { t: Throwable? ->
-                            showError()
-                            _viewEffect.postValue(ViewEffect.Progress(false))
+                            showError(t?.message)
+                            _viewEffect.value = ViewEffect.Progress(false)
                         })
         )
     }
@@ -113,11 +112,12 @@ class JokesViewModel @ViewModelInject constructor(
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe({
-                            _uiJoke.value = UiJokes(it, DATA_SCREEN)
+                            val screenType = if (it.isEmpty()) JokesParentFragment.TEXT_SCREEN else DATA_SCREEN
+                            _uiJoke.value = UiJokes(it, screenType)
                             _viewEffect.postValue(ViewEffect.Progress(false))
                         }, { t: Throwable? ->
-                            showError()
-                            _viewEffect.postValue(ViewEffect.Progress(false))
+                            showError(t?.message)
+                            _viewEffect.value = ViewEffect.Progress(false)
                         })
         )
     }
@@ -146,7 +146,7 @@ class JokesViewModel @ViewModelInject constructor(
                             }
                             isLoadingData = false
                         }, { t: Throwable? ->
-                            showError()
+                            showError(t?.message)
                             isLoadingData = false
                         })
         )
@@ -160,8 +160,8 @@ class JokesViewModel @ViewModelInject constructor(
         }
     }
 
-    private fun showError() {
-        _viewEffect.postValue(ViewEffect.SnackBar(getString(R.string.error)))
+    private fun showError(text: String?) {
+        _viewEffect.value = ViewEffect.SnackBar(text ?: getString(R.string.error))
     }
 
     private fun getRandomJoke() {
@@ -170,11 +170,12 @@ class JokesViewModel @ViewModelInject constructor(
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe({
-                            _uiJoke.value = UiJokes(it, DATA_SCREEN)
+                            val screenType = if (it.isEmpty()) JokesParentFragment.TEXT_SCREEN else DATA_SCREEN
+                            _uiJoke.value = UiJokes(it, screenType)
                             _viewEffect.postValue(ViewEffect.Progress(false))
                         }, { t: Throwable? ->
-                            showError()
-                            _viewEffect.postValue(ViewEffect.Progress(false))
+                            showError(t?.message)
+                            _viewEffect.value = ViewEffect.Progress(false)
                         })
         )
     }

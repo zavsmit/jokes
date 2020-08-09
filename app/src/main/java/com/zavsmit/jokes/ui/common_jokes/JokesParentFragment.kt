@@ -31,7 +31,7 @@ abstract class JokesParentFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initView()
-        viewAdapter = JokesAdapter(::onLikeClicked, ::onShareClicked, isMyJoke)
+        viewAdapter = JokesAdapter(::onRightButtonClicked, ::onShareClicked, isMyJoke)
         linLayoutManager = LinearLayoutManager(requireContext())
         recyclerView = view.findViewById<RecyclerView>(R.id.rv_jokes).apply {
             setHasFixedSize(true)
@@ -90,7 +90,7 @@ abstract class JokesParentFragment : Fragment() {
 
     abstract fun vmObserve()
 
-    abstract fun onLikeClicked(id: Long)
+    abstract fun onRightButtonClicked(id: Long)
 
     abstract fun onShareClicked(text: String)
 

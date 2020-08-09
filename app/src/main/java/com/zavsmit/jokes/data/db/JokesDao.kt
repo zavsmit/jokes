@@ -25,14 +25,14 @@ interface JokesDao {
     fun getJokes(offset: Long = 0, limit: Long = ITEM_PER_PAGE): Observable<List<JokeDb>>
 
     @Query("SELECT * FROM joke_db WHERE id = :id")
-    fun getJokeById(id: Long): Observable<JokeDb>
+    fun getJokeById(id: Long): JokeDb
 
 
     @Query("SELECT * FROM my_joke_db ORDER BY id")
     fun getMyJokes(): Observable<List<MyJokeDb>>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun addMyJoke(myJoke: MyJokeDb): Completable
+    fun addMyJoke(myJoke: MyJokeDb)
 
     @Query("DELETE FROM my_joke_db WHERE id = :id")
     fun deleteMyJoke(id: Long): Completable

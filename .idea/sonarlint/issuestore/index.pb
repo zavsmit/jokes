@@ -29,14 +29,10 @@ n
 >app/src/main/java/com/zavsmit/jokes/ui/jokes/JokesViewModel.kt,2/9/294a8f39e9f8d6f81dd198432a35c71148cd45fc
 m
 =app/src/main/java/com/zavsmit/jokes/ui/jokes/JokesFragment.kt,8/d/8dd04cf8b9b7c83ad6f659eadb6e485126969d02
-d
-4app/src/main/java/com/zavsmit/jokes/core/Resource.kt,7/d/7ddcdfa7e517933561e0fcbd1f964f9b30080ba9
 l
 <app/src/main/java/com/zavsmit/jokes/data/network/JokesApi.kt,f/8/f8265b55d8983483ffae3f8d8adc4bc7eb1a162a
 g
 7app/src/main/java/com/zavsmit/jokes/JokesApplication.kt,3/e/3ec301bb0d293ebfe916c3aa4d846f709fa11bad
-g
-7app/src/main/java/com/zavsmit/jokes/core/ApiResponse.kt,5/b/5ba739b40483edc0ffbdc1eca4f6087fb9457d69
 P
  app/src/main/AndroidManifest.xml,8/c/8c55c3ccc257e5907959013f99656e4c8ec3903e
 x
@@ -47,8 +43,6 @@ l
 <app/src/main/java/com/zavsmit/jokes/data/db/models/JokeDb.kt,b/e/be8689e7106ac09c38a03fcdeaeb4cc84d0d2127
 s
 Capp/src/main/java/com/zavsmit/jokes/ui/common_jokes/JokesAdapter.kt,8/9/894113e20b5ed44e725e91b24b1ddd9bd39ee9e7
-k
-;app/src/main/java/com/zavsmit/jokes/data/JokesRepository.kt,d/3/d3e0f27a0f0fca4e35b2c4a7591c6a6019c22aae
 z
 Japp/src/main/java/com/zavsmit/jokes/ui/common_jokes/JokesParentFragment.kt,0/a/0a01fa76778a861499175cf16fdfda32c00b1123
 b

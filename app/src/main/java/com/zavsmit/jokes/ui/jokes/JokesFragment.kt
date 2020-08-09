@@ -3,7 +3,6 @@ package com.zavsmit.jokes.ui.jokes
 import android.content.Intent
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import com.zavsmit.jokes.R
 import com.zavsmit.jokes.ui.common_jokes.JokesParentFragment
 import dagger.hilt.android.AndroidEntryPoint
@@ -12,6 +11,10 @@ import kotlinx.android.synthetic.main.fragment_jokes.*
 @AndroidEntryPoint
 class JokesFragment : JokesParentFragment() {
     private val jokesViewModel: JokesViewModel by viewModels()
+
+    override fun initView() {
+        tv_empty.text = getString(R.string.no_data)
+    }
 
     override fun vmObserve() {
         jokesViewModel.uiJoke.observe(viewLifecycleOwner, Observer {
@@ -31,11 +34,7 @@ class JokesFragment : JokesParentFragment() {
         jokesViewModel.refreshData()
     }
 
-    override fun initView() {
-        tv_empty.text = getString(R.string.loading)
-    }
-
-    override fun onLikeClicked(id: Long) {
+    override fun onRightButtonClicked(id: Long) {
         jokesViewModel.onLikeClicked(id)
     }
 

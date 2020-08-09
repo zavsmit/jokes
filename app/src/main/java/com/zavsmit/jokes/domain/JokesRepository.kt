@@ -45,7 +45,7 @@ class JokesRepository @Inject constructor(
                                             .andThen(dao.getJokes())
                                 }
                                 .flatMap { Observable.just(mapToUiList(it)) }
-                    else Observable.empty()
+                    else Observable.error(Throwable(resourceManager.getString(R.string.no_internet)))
                 }
         )
     }
@@ -61,7 +61,7 @@ class JokesRepository @Inject constructor(
                                     .andThen(dao.getJokes())
                         }
                         .flatMap { Observable.just(mapToUiList(it)) }
-            else Observable.empty()
+            else Observable.error(Throwable(resourceManager.getString(R.string.no_internet)))
         }
     }
 
@@ -79,13 +79,14 @@ class JokesRepository @Inject constructor(
     }
 
     fun addMyJokeById(id: Long): Completable {
-        return dao.getJokeById(id).map {
-            return@map MyJokeDb(it.id, it.joke)
-        }.flatMapCompletable { dao.addMyJoke(it) }
+        return Completable.fromAction {
+            val jokeDb = dao.getJokeById(id)
+            dao.addMyJoke(MyJokeDb(jokeDb.id, jokeDb.joke))
+        }
     }
 
     fun addMyJoke(text: String): Completable {
-        return dao.addMyJoke(MyJokeDb(text.hashCode().toLong(), text))
+        return Completable.fromAction { dao.addMyJoke(MyJokeDb(text.hashCode().toLong(), text)) }
     }
 
     fun deleteMyJoke(id: Long): Completable {

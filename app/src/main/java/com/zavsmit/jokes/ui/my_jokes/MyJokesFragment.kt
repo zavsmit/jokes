@@ -13,10 +13,6 @@ import kotlinx.android.synthetic.main.fragment_jokes.*
 class MyJokesFragment : JokesParentFragment(), AddJokeDialog.AddJokeDialogListener {
     private val myJokesViewModel: MyJokesViewModel by viewModels()
 
-    override fun refreshData() {
-        myJokesViewModel.getData()
-    }
-
     override fun initView() {
         tv_empty.text = getString(R.string.add_joke)
         isMyJoke = true
@@ -37,7 +33,11 @@ class MyJokesFragment : JokesParentFragment(), AddJokeDialog.AddJokeDialogListen
         })
     }
 
-    override fun onLikeClicked(id: Long) {
+    override fun refreshData() {
+        myJokesViewModel.getData()
+    }
+
+    override fun onRightButtonClicked(id: Long) {
         myJokesViewModel.deleteJoke(id)
     }
 
